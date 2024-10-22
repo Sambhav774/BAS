@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Automation Software</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to Book Automation Software</h1>
+    </header>
+
+    <main>
+        <section id="roleSelection">
+            <h2>Select Your Role</h2>
+            <div class="roles">
+                <button onclick="redirectTo('customer.html')">Customer</button>
+                <button onclick="redirectTo('vendor.html')">Vendor</button>
+                <button onclick="redirectTo('shopkeeper.html')">Shopkeeper</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Book Automation Software &copy; 2024</p>
+    </footer>
+
+    <script>
+        function redirectTo(page) {
+            window.location.href = page;
+        }
+    </script>
+</body>
+</html>
