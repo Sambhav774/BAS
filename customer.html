@@ -7,12 +7,14 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="styles2.css">
     <style>
-        #billSection {
-            display: none;
-            margin-top: 20px;
-            border: 1px solid #ccc;
-            padding: 15px;
-            background-color: #f9f9f9;
+        .cart-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .cart-icon img {
+            width: 40px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -23,6 +25,9 @@
             <a href="feedback.html">Give Feedback</a>
             <a href="request.html">Request a Book</a>
         </nav>
+        <a href="cart.html" class="cart-icon">
+            <img src="images/cart-icon.png" alt="Cart">
+        </a>
     </header>
 
     <main>
@@ -31,28 +36,6 @@
             <ul id="bookList">
                 <!-- Book items will be populated here -->
             </ul>
-        </section>
-
-        <section id="buySection" style="display:none;">
-            <h2>Buy Selected Book</h2>
-            <form id="buyForm">
-                <p id="selectedBook"></p>
-                <label for="customerName">Name:</label>
-                <input type="text" id="customerName" name="customerName" required><br><br>
-                
-                <label for="customerEmail">Email:</label>
-                <input type="email" id="customerEmail" name="customerEmail" required><br><br>
-
-                <label for="creditCard">Credit Card Number:</label>
-                <input type="text" id="creditCard" name="creditCard" required><br><br>
-                <button type="submit">Buy Book</button>
-            </form>
-            <p id="buyMessage"></p>
-        </section>
-
-        <section id="billSection">
-            <h2>Your Bill</h2>
-            <p id="billDetails"></p>
         </section>
     </main>
 
@@ -78,45 +61,28 @@
                 li.innerHTML = `
                     <img src="${book.image}" alt="${book.title}" style="width:100px;height:150px;"><br>
                     ${book.title} - ${book.price}
-                    <button data-index="${index}" class="selectBook">Select</button>
+                    <button data-index="${index}" class="addToCart">Add to Cart</button>
                 `;
                 bookList.appendChild(li);
             });
-        });
 
-        // Handle book selection
-        document.getElementById('bookList').addEventListener('click', function(e) {
-            if (e.target.classList.contains('selectBook')) {
-                const index = e.target.getAttribute('data-index');
-                const selectedBook = books[index];
-                document.getElementById('selectedBook').textContent = `You have selected: ${selectedBook.title} for ${selectedBook.price}`;
-                document.getElementById('buySection').style.display = 'block';
-            }
-        });
+        // Add to cart
+        bookList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('addToCart')) {
+                    const index = e.target.getAttribute('data-index');
+                    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                    const existingItem = cart.find(item => item.title === books[index].title);
 
-        // Handle the buy form submission
-        document.getElementById('buyForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const customerName = document.getElementById('customerName').value;
-            const customerEmail = document.getElementById('customerEmail').value;
-            const creditCard = document.getElementById('creditCard').value;
-            const selectedBookTitle = document.getElementById('selectedBook').textContent;
+                    if (existingItem) {
+                        existingItem.quantity += 1;
+                    } else {
+                        cart.push({ ...books[index], quantity: 1 });
+                    }
 
-            const selectedBookPrice = selectedBookTitle.split('for ')[1];
-
-            // Display the bill
-            document.getElementById('billDetails').innerHTML = `
-                <strong>Name:</strong> ${customerName}<br>
-                <strong>Email:</strong> ${customerEmail}<br>
-                <strong>Book Title:</strong> ${selectedBookTitle.split(': ')[1]}<br>
-                <strong>Price:</strong> ${selectedBookPrice}<br>
-                <strong>Credit Card Number:</strong> ${creditCard}
-            `;
-            document.getElementById('billSection').style.display = 'block';
-
-            // Clear selection
-            document.getElementById('buySection').style.display = 'none';
-            document.getElementById('buyForm').reset();
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    alert('Book added to cart!');
+                }
+            });
         });
     </script>
 </body>
