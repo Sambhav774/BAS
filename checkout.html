@@ -21,7 +21,7 @@
         }
 
         #checkoutForm input {
-            width: 100%;
+            width: 90%;
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
@@ -36,6 +36,11 @@
         }
 
         #downloadBill {
+            margin-top: 10px;
+        }
+
+        #errorMessages {
+            color: red;
             margin-top: 10px;
         }
     </style>
@@ -61,6 +66,8 @@
 
                 <button type="submit">Generate Bill</button>
             </form>
+            <!-- Error Messages -->
+            <div id="errorMessages"></div>
         </section>
 
         <!-- Bill Details -->
@@ -89,12 +96,32 @@
                 return;
             }
 
+            // Check if cart is empty
+            if (cart.length === 0) {
+                alert('Your cart is empty. Add items to proceed.');
+                return;
+            }
+
+            // Name validation: Only alphabetic characters and spaces
+            const nameRegex = /^[A-Za-z\s]+$/;
+            if (!nameRegex.test(name)) {
+                document.getElementById('errorMessages').innerHTML = 'Name must contain only alphabetic characters and spaces.';
+                return;
+            }
+
+            // Credit card validation: Only numeric characters, length must be between 16 and 19
+            const creditCardRegex = /^[0-9]{16,19}$/;
+            if (!creditCardRegex.test(creditCard)) {
+                document.getElementById('errorMessages').innerHTML = 'Credit card number must contain only numeric characters and be between 16 and 19 digits long.';
+                return;
+            }
+
             // Generate Bill
             const billContent = `
                 <strong>Name:</strong> ${name}<br>
                 <strong>Email:</strong> ${email}<br>
                 <strong>Credit Card:</strong> **** **** **** ${creditCard.slice(-4)}<br>
-                <strong>Total Price:</strong> $${totalPrice}<br>
+                <strong>Total Price:</strong> ${totalPrice}<br>
                 <h3>Items Purchased:</h3>
                 <ul>
                     ${cart.map(item => `<li>${item.title} (x${item.quantity}) - $${item.price}</li>`).join('')}
