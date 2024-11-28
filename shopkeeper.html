@@ -147,15 +147,16 @@
         document.querySelector('#bookTable tbody').addEventListener('click', function(e) {
             if (e.target.classList.contains('editBtn')) {
                 const index = e.target.getAttribute('data-index');
-                const book = books[index];
+                let book = books[index];
 
                 // Populate form with book details for editing
                 document.getElementById('bookTitle').value = book.title;
+                
                 document.getElementById('bookPrice').value = book.price;
                 document.getElementById('bookImage').value = book.image;
             }
         });
-
+        
         // Delete a book
         document.querySelector('#bookTable tbody').addEventListener('click', function(e) {
             if (e.target.classList.contains('deleteBtn')) {

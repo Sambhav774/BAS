@@ -58,9 +58,12 @@
             const bookList = document.getElementById('bookList');
             books.forEach((book, index) => {
                 const li = document.createElement('li');
+                const be=(book.price.replace('$',''));
+                const b=(be.replace('A-Z',''));
+                const e=parseFloat(b.replace('a-z',''));
                 li.innerHTML = `
                     <img src="${book.image}" alt="${book.title}" style="width:100px;height:150px;"><br>
-                    ${book.title} - ${book.price}
+                    ${book.title} - $${e}
                     <button data-index="${index}" class="addToCart">Add to Cart</button>
                 `;
                 bookList.appendChild(li);
