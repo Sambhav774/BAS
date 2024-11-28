@@ -124,7 +124,7 @@
                 <strong>Total Price:</strong> ${totalPrice}<br>
                 <h3>Items Purchased:</h3>
                 <ul>
-                    ${cart.map(item => `<li>${item.title} (x${item.quantity}) - $${item.price}</li>`).join('')}
+                    ${cart.map(item => `<li>${item.title} (x${item.quantity}) - ${item.price}</li>`).join('')}
                 </ul>
             `;
 
