@@ -33,6 +33,8 @@
     <main>
         <section id="availableBooks">
             <h2>Select a Book to Buy</h2>
+            <!-- Search Bar -->
+            <input type="text" id="searchBar" placeholder="Search for a book..." style="margin-bottom: 20px; padding: 10px; width: 80%; font-size: 16px;">
             <ul id="bookList">
                 <!-- Book items will be populated here -->
             </ul>
@@ -52,7 +54,23 @@
             { title: 'The Catcher in the Rye', price: '$9.99', image: 'images/catcher-in-the-rye.jpg' },
             { title: 'Moby Dick', price: '$15.50', image: 'images/moby-dick.jpg' }
         ];
+        const bookList = document.getElementById('bookList');
+            const searchBar = document.getElementById('searchBar');
 
+        // Function to render books
+        const renderBooks = (filteredBooks) => {
+            bookList.innerHTML = ''; // Clear the list
+            filteredBooks.forEach((book, index) => {
+                const li = document.createElement('li');
+                const price = parseFloat(book.price.replace('$', ''));
+                li.innerHTML = `
+                    <img src="${book.image}" alt="${book.title}" style="width:100px;height:150px;"><br>
+                    ${book.title} - $${price}
+                    <button data-index="${index}" class="addToCart">Add to Cart</button>
+                `;
+                bookList.appendChild(li);
+            });
+        };
         // Load available books
         document.addEventListener('DOMContentLoaded', function() {
             const bookList = document.getElementById('bookList');
@@ -68,7 +86,7 @@
                 `;
                 bookList.appendChild(li);
             });
-
+            
         // Add to cart
         bookList.addEventListener('click', (e) => {
                 if (e.target.classList.contains('addToCart')) {
@@ -85,6 +103,11 @@
                     localStorage.setItem('cart', JSON.stringify(cart));
                     alert('Book added to cart!');
                 }
+            });
+                searchBar.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase(); // Convert search query to lowercase
+                const filteredBooks = books.filter(book => book.title.toLowerCase().includes(query));
+                renderBooks(filteredBooks); // Re-render the filtered list
             });
         });
     </script>
