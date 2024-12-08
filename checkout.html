@@ -21,7 +21,7 @@
         }
 
         #checkoutForm input {
-            width: 100%;
+            width: 90%;
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
@@ -36,6 +36,11 @@
         }
 
         #downloadBill {
+            margin-top: 10px;
+        }
+
+        #errorMessages {
+            color: red;
             margin-top: 10px;
         }
     </style>
@@ -70,6 +75,8 @@
 
                 <button type="submit">Generate Bill</button>
             </form>
+            <!-- Error Messages -->
+            <div id="errorMessages"></div>
         </section>
 
         <!-- Bill Details -->
@@ -107,7 +114,12 @@ paymentMethodSelect.addEventListener('change', () => {
                 alert('Your cart is empty. Add items to proceed.');
                 return;
             }
-
+            // Name validation: Only alphabetic characters and spaces
+            const nameRegex = /^[A-Za-z\s]+$/;
+            if (!nameRegex.test(name)) {
+                document.getElementById('errorMessages').innerHTML = 'Name must contain only alphabetic characters and spaces.';
+                return;
+            }
             let paymentInfo = '';
     if (paymentMethod === 'creditCard') {
         const creditCard = document.getElementById('creditCard').value;

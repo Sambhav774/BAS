@@ -42,9 +42,12 @@
         document.getElementById('requestForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const requestedBook = document.getElementById('requestedBook').value;
-            const authorName = document.getElementById('authorName').value;
+            let requestedBook = document.getElementById('requestedBook').value;
+            let authorName = document.getElementById('authorName').value;
             const email = document.getElementById('email').value;
+            // Remove any non-alphabetic characters (including numbers and special characters)
+            requestedBook = requestedBook.replace(/[^A-Za-z\s]/g, '');
+            authorName = authorName.replace(/[^A-Za-z\s]/g, '');
 
             if (requestedBook && authorName && email) {
                 // Retrieve existing requests from localStorage
@@ -65,6 +68,9 @@
                 
                 // Reset form
                 document.getElementById('requestForm').reset();
+            }else {
+                // Show error message if any field is invalid
+                document.getElementById('requestMessage').textContent = 'Please enter valid alphabetic characters for Title and Author.';
             }
         });
     </script>
