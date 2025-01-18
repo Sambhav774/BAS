@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two-Way Messaging</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f9f9f9;
+        }
+
+        #messagingApp {
+            width: 90%;
+            max-width: 800px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #chatBox {
+            height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            flex: 1;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+
+        .message.shopkeeper {
+            justify-content: flex-start;
+        }
+
+        .message.vendor {
+            justify-content: flex-end;
+        }
+
+        .message p {
+            max-width: 70%;
+            margin: 0;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .message.shopkeeper p {
+            background: #f0f0f0;
+            text-align: left;
+        }
+
+        .message.vendor p {
+            background: #d1f0d1;
+            text-align: right;
+        }
+
+        #messageInput {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+        }
+
+        .inputBox {
+            flex: 1;
+            margin: 0 5px;
+        }
+
+        .inputBox input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .inputBox button {
+            padding: 10px 20px;
+            border: none;
+            background: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .inputBox button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="messagingApp">
+        <div id="chatBox">
+            <!-- Messages will appear here -->
+        </div>
+        <div id="messageInput">
+            <div class="inputBox">
+                <label for="shopkeeperMessage">Shopkeeper:</label>
+                <input type="text" id="shopkeeperMessage" placeholder="Shopkeeper's message">
+                <button id="sendShopkeeper">Send</button>
+            </div>
+            <div class="inputBox">
+                <label for="vendorMessage">Vendor:</label>
+                <input type="text" id="vendorMessage" placeholder="Vendor's message">
+                <button id="sendVendor">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        const shopkeeperInput = document.getElementById('shopkeeperMessage');
+        const vendorInput = document.getElementById('vendorMessage');
+        const sendShopkeeperButton = document.getElementById('sendShopkeeper');
+        const sendVendorButton = document.getElementById('sendVendor');
+
+        // Simulated chat storage
+        let chatHistory = JSON.parse(localStorage.getItem('chatHistory')) || [];
+
+        // Function to load and render the chat
+        const loadChat = () => {
+            chatBox.innerHTML = '';
+            chatHistory.forEach(({ sender, message }) => {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', sender);
+                messageDiv.innerHTML = `<p>${message}</p>`;
+                chatBox.appendChild(messageDiv);
+            });
+
+            // Scroll to the bottom
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
+
+        // Function to send a message
+        const sendMessage = (message, sender) => {
+            if (!message.trim()) return;
+
+            // Add the message to chat history
+            chatHistory.push({ sender, message });
+            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+
+            // Reload the chat
+            loadChat();
+        };
+
+        // Event listeners for sending messages
+        sendShopkeeperButton.addEventListener('click', () => {
+            sendMessage(shopkeeperInput.value, 'shopkeeper');
+            shopkeeperInput.value = '';
+        });
+
+        sendVendorButton.addEventListener('click', () => {
+            sendMessage(vendorInput.value, 'vendor');
+            vendorInput.value = '';
+        });
+
+        shopkeeperInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage(shopkeeperInput.value, 'shopkeeper');
+                shopkeeperInput.value = '';
+            }
+        });
+
+        vendorInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage(vendorInput.value, 'vendor');
+                vendorInput.value = '';
+            }
+        });
+
+        // Load the chat initially
+        document.addEventListener('DOMContentLoaded', loadChat);
+    </script>
+</body>
+</html>

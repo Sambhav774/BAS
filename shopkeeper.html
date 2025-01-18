@@ -26,6 +26,14 @@
         td {
             background-color: #fff;
         }
+        .quantity-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .quantity-controls button {
+            margin: 0 5px;
+        }
         .message-icon {
             position: absolute;
             top: 10px;
@@ -42,7 +50,7 @@
         <h1>Manage Books</h1>
         <nav>
             <a href="shopkeeper-requests.html">View Book Requests</a>
-            <a href="shopkeeper-feedback.html">View Customer Feedback</a> <!-- New link added -->
+            <a href="shopkeeper-feedback.html">View Customer Feedback</a>
         </nav>
         <a href="vendor.html" class="message-icon">
             <img src="images/message-icon.png" alt="Cart">
@@ -59,6 +67,7 @@
                             <th>Book Title</th>
                             <th>Price</th>
                             <th>Image</th>
+                            <th>Quantity</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -78,6 +87,9 @@
                 <label for="bookImage">Image URL:</label>
                 <input type="text" id="bookImage" required><br><br>
 
+                <label for="bookQuantity">Quantity:</label>
+                <input type="number" id="bookQuantity" min="1" required><br><br>
+
                 <button type="submit">Add/Update Book</button>
             </form>
         </section>
@@ -89,22 +101,19 @@
 
     <script>
         const predefinedBooks = [
-            { title: 'The Great Gatsby', price: '$10.99', image: 'images/great-gatsby.jpg' },
-            { title: '1984', price: '$8.99', image: 'images/1984.jpg' },
-            { title: 'To Kill a Mockingbird', price: '$12.99', image: 'images/to-kill-a-mockingbird.jpg' },
-            { title: 'The Catcher in the Rye', price: '$9.99', image: 'images/catcher-in-the-rye.jpg' },
-            { title: 'Moby Dick', price: '$15.50', image: 'images/moby-dick.jpg' }
+            { title: 'The Great Gatsby', price: '$10.99', image: 'images/great-gatsby.jpg', quantity: 10 },
+            { title: '1984', price: '$8.99', image: 'images/1984.jpg', quantity: 5 },
+            { title: 'To Kill a Mockingbird', price: '$12.99', image: 'images/to-kill-a-mockingbird.jpg', quantity: 8 },
         ];
 
         let books = [];
 
         // Load existing books from localStorage or set predefined ones
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const storedBooks = JSON.parse(localStorage.getItem('books'));
             if (storedBooks && storedBooks.length > 0) {
                 books = storedBooks;
             } else {
-                // If no books exist, use predefined books
                 books = predefinedBooks;
                 localStorage.setItem('books', JSON.stringify(books));
             }
@@ -122,6 +131,13 @@
                     <td>${book.price}</td>
                     <td><img src="${book.image}" alt="${book.title}" style="width:50px;height:75px;"></td>
                     <td>
+                        <div class="quantity-controls">
+                            <button class="decreaseBtn" data-index="${index}">-</button>
+                            <span>${book.quantity}</span>
+                            <button class="increaseBtn" data-index="${index}">+</button>
+                        </div>
+                    </td>
+                    <td>
                         <button class="editBtn" data-index="${index}">Edit</button>
                         <button class="deleteBtn" data-index="${index}">Delete</button>
                     </td>
@@ -131,52 +147,63 @@
         }
 
         // Add or update book
-        document.getElementById('bookForm').addEventListener('submit', function(e) {
+        document.getElementById('bookForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const title = document.getElementById('bookTitle').value;
             const price = document.getElementById('bookPrice').value;
             const image = document.getElementById('bookImage').value;
+            const quantity = parseInt(document.getElementById('bookQuantity').value, 10);
 
-            // Check if the book already exists
             const existingBookIndex = books.findIndex(book => book.title.toLowerCase() === title.toLowerCase());
 
             if (existingBookIndex >= 0) {
-                // Update existing book
                 books[existingBookIndex].price = price;
                 books[existingBookIndex].image = image;
+                books[existingBookIndex].quantity = quantity;
             } else {
-                // Add new book
-                books.push({ title, price, image });
+                books.push({ title, price, image, quantity });
             }
 
-            // Save books to localStorage
             localStorage.setItem('books', JSON.stringify(books));
             renderBookTable();
             document.getElementById('bookForm').reset();
         });
 
         // Edit book
-        document.querySelector('#bookTable tbody').addEventListener('click', function(e) {
+        document.querySelector('#bookTable tbody').addEventListener('click', function (e) {
             if (e.target.classList.contains('editBtn')) {
                 const index = e.target.getAttribute('data-index');
-                let book = books[index];
+                const book = books[index];
 
-                // Populate form with book details for editing
                 document.getElementById('bookTitle').value = book.title;
-                
                 document.getElementById('bookPrice').value = book.price;
                 document.getElementById('bookImage').value = book.image;
+                document.getElementById('bookQuantity').value = book.quantity;
             }
         });
-        
-        // Delete a book
-        document.querySelector('#bookTable tbody').addEventListener('click', function(e) {
+
+        // Delete book
+        document.querySelector('#bookTable tbody').addEventListener('click', function (e) {
             if (e.target.classList.contains('deleteBtn')) {
                 const index = e.target.getAttribute('data-index');
-                books.splice(index, 1); // Remove book from array
-                localStorage.setItem('books', JSON.stringify(books)); // Update localStorage
-                renderBookTable(); // Re-render table
+                books.splice(index, 1);
+                localStorage.setItem('books', JSON.stringify(books));
+                renderBookTable();
             }
+        });
+
+        // Adjust book quantity
+        document.querySelector('#bookTable tbody').addEventListener('click', function (e) {
+        const index = e.target.getAttribute('data-index');
+        if (e.target.classList.contains('increaseBtn')) {
+            books[index].quantity += 1;
+        } else if (e.target.classList.contains('decreaseBtn')) {
+            if (books[index].quantity > 0) {
+                books[index].quantity -= 1;
+            }
+        }
+        localStorage.setItem('books', JSON.stringify(books));
+        renderBookTable();
         });
     </script>
 </body>
